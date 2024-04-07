@@ -54,6 +54,9 @@ idea.project.settings {
   }
 }
 ```
+- A consequence of adding this plugin is that your `module-b` `build.gradle.kts` might need to be modified slightly
+- From what I can tell, it appears it no longer shares plugins or ext variables with the root project.
+  - You will have to redefine what you need to use for this module
 
 
 ## Information
