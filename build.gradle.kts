@@ -9,7 +9,7 @@ plugins {
 
 idea.project.settings {
     taskTriggers {
-        afterSync(tasks.getByPath(":module-b:build"))
+        afterSync(tasks.getByPath(":module-b:clean"), tasks.getByPath(":module-b:build"))
     }
 }
 
