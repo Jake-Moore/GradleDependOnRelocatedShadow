@@ -23,6 +23,8 @@ implementation(project(":module-b")) {
 - This is by far not the most clean solution, but after a couple of days of struggling to get something to work, this is the best I could come up with.
 - **NOTE:** If the project fails to build using this solution, refresh gradle in IntelliJ
   - This will trigger the `idea-ext` plugin to re-compile the `unpacked-shadow` folder
+- **NOTE:** If you change `module-b`'s abstract class, you will have to rebuild `unpacked-shadow`
+  - The simplest way to do this is using `idea-ext` and refreshing gradle
 #### 1. Add the `unpackShadow` task to `module-b`
 ```kotlin
 tasks.register<Copy>("unpackShadow") {
@@ -37,6 +39,20 @@ tasks.getByName("build").finalizedBy(tasks.getByName("unpackShadow"))
 implementation(files(project(":module-b")
     .dependencyProject.layout.buildDirectory.dir("unpacked-shadow"))
 )
+```
+#### 3. Add `org.jetbrains.gradle.plugin.idea-ext` to the root project's `build.gradle.kts`
+- This will allow you to refresh gradle in IntelliJ, which will re-compile the `unpacked-shadow` folder
+- Otherwise, you'll have to manually call `:module-b:build` before you can build `:module-a`
+- Similarly, if `module-a` produces an error during build, try refreshing gradle in IntelliJ before trying again
+```kotlin
+plugins {
+  id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.8"
+}
+idea.project.settings {
+  taskTriggers {
+    afterSync(tasks.getByPath(":module-b:build"))
+  }
+}
 ```
 
 
