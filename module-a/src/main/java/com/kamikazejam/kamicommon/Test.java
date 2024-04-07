@@ -9,9 +9,8 @@ public class Test extends AbstractTest {
         @NotNull MappingNode node;
     }
 
-
     @Override
-    public void test(org.yaml.snakeyaml.nodes.MappingNode mappingNode) {
+    public void test(MappingNode mappingNode) {
 
     }
 }

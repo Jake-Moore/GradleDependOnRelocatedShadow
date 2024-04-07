@@ -1,15 +1,16 @@
-import org.gradle.api.attributes.Bundling.*
-
 plugins {
     // module-a specific plugins
 }
 
 dependencies {
-    // implementation(project(":module-b"))
+    // I hate this, but IntelliJ's gradle integration won't allow me to depend on the relocated module-b jar
+    implementation(files(project(":module-b")
+        .dependencyProject.layout.buildDirectory.dir("unpacked-shadow"))
+    )
+}
 
-    implementation(project(":module-b")) {
-        attributes {
-            attribute(BUNDLING_ATTRIBUTE, objects.named<Bundling>(SHADOWED))
-        }
+tasks {
+    jar {
+
     }
 }

@@ -1,18 +1,25 @@
 plugins {
     id("com.github.johnrengelman.shadow")
     id("maven-publish")
+
+    // Required since we are using idea-ext afterSync
+    id("java")
+    id("java-library")
 }
 
-var intelliJ = project.property("intellijDep") as String
+// var intelliJ = project.property("intellijDep") as String
 dependencies {
     implementation("org.yaml:snakeyaml:2.2")
 
     // IntelliJ annotations
-    implementation(intelliJ)
+    implementation("org.jetbrains:annotations:24.1.0") // Required since we are using idea-ext afterSync
 }
 
 tasks {
-    build.get().dependsOn("shadowJar")
+    build {
+        dependsOn("shadowJar")
+    }
+    // build.get().dependsOn("shadowJar")
     shadowJar {
         archiveClassifier.set("")
         relocate("org.yaml.snakeyaml", "com.kamikazejam.kamicommon.snakeyaml")
@@ -40,3 +47,10 @@ publishing {
         }
     }
 }
+
+tasks.register<Copy>("unpackShadow") {
+    dependsOn(tasks.shadowJar)
+    from(zipTree(layout.buildDirectory.dir("libs").map { it.file(tasks.shadowJar.get().archiveFileName) }))
+    into(layout.buildDirectory.dir("unpacked-shadow"))
+}
+tasks.getByName("assemble").finalizedBy(tasks.getByName("unpackShadow"))
